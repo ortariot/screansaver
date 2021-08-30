@@ -12,30 +12,105 @@ SCREEN_DIM = (800, 600)
 # Функции для работы с векторами
 # =======================================================================================
 
-def sub(x, y):
-    """"возвращает разность двух векторов"""
-    return x[0] - y[0], x[1] - y[1]
+class Vec2d:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __sub__(self, other):
+        """"возвращает разность двух векторов"""
+        return self.x - other.x, self.y - other.y
 
 
-def add(x, y):
-    """возвращает сумму двух векторов"""
-    return x[0] + y[0], x[1] + y[1]
+    def __add__(self, other):
+        """возвращает сумму двух векторов"""
+        return self.x + other.x, self.y + other.y
 
 
-def length(x):
-    """возвращает длину вектора"""
-    return math.sqrt(x[0] * x[0] + x[1] * x[1])
+    def __len__(self):
+        """возвращает длину вектора"""
+        return math.sqrt(self.x * self.x + self.y * self.y)
 
 
-def mul(v, k):
-    """возвращает произведение вектора на число"""
-    return v[0] * k, v[1] * k
+    def __mul__(self, k):
+        """возвращает произведение вектора на число"""
+        return self.x * k, self.y * k
 
 
-def vec(x, y):
-    """возвращает пару координат, определяющих вектор (координаты точки конца вектора),
-    координаты начальной точки вектора совпадают с началом системы координат (0, 0)"""
-    return sub(y, x)
+    def vec(self):
+        """возвращает пару координат, определяющих вектор (координаты точки конца вектора),
+        координаты начальной точки вектора совпадают с началом системы координат (0, 0)"""
+        return self.x, self.y
+
+
+    def int_pair(self):
+        return (self.x, self.y)
+
+
+class Polyline:
+    def __init__(self):
+        self.points = []
+        self.speeds = []
+
+    def add_vec2d(self, vec: Vec2d, speed: Vec2d):
+        self.points.append(vec)
+        self.speeds.append(speed)
+    
+    def set_points(self):
+        """функция перерасчета координат опорных точек"""
+        for p in range(len(self.points)):
+            self.points[p] = self.points[p] + self.speeds[p]
+            if self.points[p][0] > SCREEN_DIM[0] or self.points[p][0] < 0:
+                self.speeds[p] = (- self.speeds[p][0], self.speeds[p][1])
+            if self.points[p][1] > SCREEN_DIM[1] or self.points[p][1] < 0:
+                self.speeds[p] = (self.speeds[p][0], -self.speeds[p][1])
+
+
+    def draw_points(self, style="points", width=3, color=(255, 255, 255)):
+        """функция отрисовки точек на экране"""
+        if style == "line":
+            for p_n in range(-1, len(self.points) - 1):
+                pygame.draw.line(gameDisplay, color,
+                                (int(self.points[p_n][0]), int(self.points[p_n][1])),
+                                (int(self.points[p_n + 1][0]), int(self.points[p_n + 1][1])), width)
+
+        elif style == "points":
+            for p in self.points:
+                pygame.draw.circle(gameDisplay, color,
+                                (int(p[0]), int(p[1])), width)
+
+
+
+class Knot(Polyline):
+
+    def get_point(points, alpha, deg=None):
+        if deg is None:
+        deg = len(points) - 1
+        if deg == 0:
+            return points[0]
+        return add(mul(points[deg], alpha), mul(get_point(points, alpha, deg - 1), 1 - alpha))
+
+
+    def get_points(base_points, count):
+        alpha = 1 / count
+        res = []
+        for i in range(count):
+            res.append(get_point(base_points, i * alpha))
+        return res
+
+    def get_knot(points, count):
+        if len(points) < 3:
+            return []
+        res = []
+        for i in range(-2, len(points) - 2):
+            ptn = []
+            ptn.append(mul(add(points[i], points[i + 1]), 0.5))
+            ptn.append(points[i + 1])
+            ptn.append(mul(add(points[i + 1], points[i + 2]), 0.5))
+
+            res.extend(get_points(ptn, count))
+        return res
+
 
 
 # =======================================================================================
