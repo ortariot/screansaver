@@ -69,11 +69,11 @@ class Polyline:
         if style == "line":
             for p_n in range(-1, len(self.points) - 1):
                 pygame.draw.line(gameDisplay, color,
-                                 (int(self.points[p_n][0]),
-                                  int(self.points[p_n][1])
+                                 (int(self.points[p_n].x),
+                                  int(self.points[p_n].y)
                                   ),
-                                 (int(self.points[p_n + 1][0]),
-                                  int(self.points[p_n + 1][1])
+                                 (int(self.points[p_n + 1].x),
+                                  int(self.points[p_n + 1].y)
                                   ),
                                  width
                                  )
@@ -81,7 +81,7 @@ class Polyline:
         elif style == "points":
             for p in self.points:
                 pygame.draw.circle(gameDisplay, color,
-                                   (int(p[0]), int(p[1])),
+                                   (int(p.x), int(p.y)),
                                    width
                                    )
 
@@ -120,9 +120,10 @@ class Knot(Polyline):
         res = []
         for i in range(-2, len(self.points) - 2):
             ptn = []
-            ptn.append((self.points[i] + self.points[i + 1]) * 0.5)
+            ptn.append(self.points[i] + self.points[i + 1])
+            print(ptn[0].x)
             ptn.append(self.points[i + 1])
-            ptn.append((self.points[i + 1] + self.points[i + 2]) * 0.5)
+            ptn.append((self.points[i + 1] + self.points[i + 2]))
 
             res.extend(self.get_points(ptn, self.count))
         return res
@@ -253,7 +254,7 @@ if __name__ == "__main__":
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 line.set_steps(steps)
-                line.add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                line.add_vec2d( Vec2d(event.pos[0], event.pos[1]) , Vec2d(random.random() * 2, random.random() * 2))
                 # points.append(event.pos)
                 # speeds.append((random.random() * 2, random.random() * 2))
 
