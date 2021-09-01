@@ -4,6 +4,7 @@
 import pygame
 import random
 import math
+from pygame.constants import K_1
 
 from pygame.version import ver
 
@@ -56,6 +57,17 @@ class Polyline:
         self.points.append(vec)
         self.speeds.append(speed)
 
+    def pluse_speed(self, value_x, value_y):  
+        for spd in self.speeds:
+            spd.x += value_x
+            spd.y += value_y
+
+    def minus_speed(self, value_x, value_y):
+        for spd in self.speeds:
+            spd.x = 0
+            spd.y = 0 
+
+
     def set_points(self):
         """функция перерасчета координат опорных точек"""
         for p in range(len(self.points)):
@@ -64,6 +76,7 @@ class Polyline:
                 self.speeds[p] = Vec2d(- self.speeds[p].x, self.speeds[p].y)
             if self.points[p].y > SCREEN_DIM[1] or self.points[p].y < 0:
                 self.speeds[p] = Vec2d(self.speeds[p].x, -self.speeds[p].y)
+        
 
     def draw_points(self, style="points",
                     width=3,
@@ -86,6 +99,7 @@ class Polyline:
 class Knot(Polyline):
 
     line_points = []
+    steps = 35
 
     def add_vec2d(self, vec: Vec2d, speed: Vec2d):
         vec_x, vec_y = vec
@@ -99,6 +113,10 @@ class Knot(Polyline):
 
     def set_steps(self, count):
         self.count = count
+
+    def get_steps(self):
+        return self.steps
+
 
     def get_point(self, base_points, alpha, deg=None):
         if deg is None:
@@ -125,7 +143,7 @@ class Knot(Polyline):
             ptn.append(self.points[i + 1])
             ptn.append((self.points[i + 1] + self.points[i + 2]) * 0.5)
 
-            self.line_points.extend(self.get_points(ptn, self.count))
+            self.line_points.extend(self.get_points(ptn, self.steps))
         return self.line_points
 
     def draw_points(self, style="points",
@@ -182,6 +200,8 @@ if __name__ == "__main__":
     steps = 35
     working = True
     line = Knot()
+    line2 = Knot()
+    curves = [Knot() for i in range(10)]
     show_help = False
     pause = True
 
@@ -196,28 +216,122 @@ if __name__ == "__main__":
                 if event.key == pygame.K_ESCAPE:
                     working = False
                 if event.key == pygame.K_r:
+                    curves = [Knot() for i in range(10)]
                     line = Knot()
                 if event.key == pygame.K_p:
                     pause = not pause
                 if event.key == pygame.K_KP_PLUS:
-                    steps += 1
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_0]:
+                        steps = curves[0].get_steps() + 1
+                        curves[0].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_1]:
+                        steps = curves[1].get_steps() + 1
+                        curves[1].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_2]:
+                        steps = curves[2].get_steps() + 1
+                        curves[2].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_3]:
+                        steps = curves[3].get_steps() + 1
+                        curves[3].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_4]:
+                        steps = curves[4].get_steps() + 1
+                        curves[4].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_5]:
+                        steps = curves[5].get_steps() + 1
+                        curves[5].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_6]:
+                        steps = curves[6].get_steps() + 1
+                        curves[6].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_7]:
+                        steps = curves[7].get_steps() + 1
+                        curves[7].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_8]:
+                        steps = curves[8].get_steps() + 1
+                        curves[8].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_PLUS] and pygame.key.get_pressed()[pygame.K_9]:
+                        steps = curves[9].get_steps() + 1
+                        curves[9].set_steps(steps)         
                 if event.key == pygame.K_F1:
                     show_help = not show_help
                 if event.key == pygame.K_KP_MINUS:
-                    steps -= 1 if steps > 1 else 0
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_0]:
+                        steps = curves[0].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[0].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_1]:
+                        steps = curves[1].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[1].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_2]:
+                        steps = curves[2].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[2].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_3]:
+                        steps = curves[3].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[3].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_4]:
+                        steps = curves[4].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[4].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_5]:
+                        steps = curves[5].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[5].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_6]:
+                        steps = curves[6].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[6].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_7]:
+                        steps = curves[7].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[7].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_8]:
+                        steps = curves[8].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[8].set_steps(steps)
+                    if pygame.key.get_pressed()[pygame.K_KP_MINUS] and pygame.key.get_pressed()[pygame.K_9]:
+                        steps = curves[9].get_steps() - 1 if curves[0].get_steps() > 1 else 0
+                        curves[9].set_steps(steps)    
+                if event.key == pygame.K_MINUS:
+                    if pygame.key.get_pressed()[pygame.K_MINUS] and pygame.key.get_pressed()[pygame.K_1]:
+                        curves[1].minus_speed(0.2, 0.2)
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                line.set_steps(steps)
-                line.add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if event.key == pygame.K_EQUALS:
+                    print('pkuse')
+                    if pygame.key.get_pressed()[pygame.K_EQUALS] and pygame.key.get_pressed()[pygame.K_1]:
+                        curves[1].pluse_speed(0.2, 0.2)
+
+
+
+
+        
+            if event.type ==  pygame.MOUSEBUTTONDOWN:
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_0]:
+                    curves[0].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_1]:
+                    curves[1].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_2]:
+                    curves[2].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_3]:
+                    curves[3].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_4]:
+                    curves[4].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_5]:
+                    curves[5].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_6]:
+                    curves[6].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_7]:
+                    curves[7].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_8]:
+                    curves[8].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))
+                if pygame.mouse.get_pressed()[0] and pygame.key.get_pressed()[pygame.K_9]:
+                    curves[9].add_vec2d(event.pos, (random.random() * 2, random.random() * 2))    
+                
+
 
         gameDisplay.fill((0, 0, 0))
         hue = (hue + 1) % 360
         color.hsla = (hue, 100, 50, 100)
-        line.draw_points()
-        line.draw_points('line', 3, color)
+
+        for curve in curves:
+            curve.draw_points()
+            curve.draw_points('line', 3, color)
 
         if not pause:
-            line.set_points()
+            for curve in curves:
+                curve.set_points()
         if show_help:
             draw_help()
 
